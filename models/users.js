@@ -11,9 +11,10 @@ userModel.prototype.register = function(done){
     console.log("dasda");
         var conn = db.getConnection();
         var sql = 'insert into users\
-        (`id`,`firstname`,`lastname`,`email`,`password`,`phone`,`is_active`)\
-         values(0,?,?,?,?,?,?)';
-        conn.query(sql, [this.firstname,this.lastname,this.email, this.password, this.phone, this.is_active], function (err, rows, fields) {
+        (`id`,`firstname`,`lastname`,`email`,`password`,`phone`,`is_active`, `is_customer_login`)\
+         values(0,?,?,?,?,?,?,?)';
+         var is_customer_login = (this.is_customer_login == undefined || this.is_customer_login == ''?'0':'1');
+        conn.query(sql, [this.firstname,this.lastname,this.email, this.password, this.phone, this.is_active, is_customer_login], function (err, rows, fields) {
             if(err){
                 done(err)
             }else done(null,rows);

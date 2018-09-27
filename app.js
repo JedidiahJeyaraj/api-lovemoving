@@ -27,6 +27,7 @@ app.post('/register', function(req, res){
         userObj.phone = req.body.phone;
         userObj.password = req.body.password;
         userObj.is_active = '1';
+        userObj.is_customer_login = req.body.is_customer_login;
         userObj.register(function(error, result){
 
             if (error) {
