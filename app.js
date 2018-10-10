@@ -66,6 +66,25 @@ app.post('/login', function(req, res){
 
 });
 
+app.get('/users-list', function(req, res){
+
+    var userObj = new userModel();    
+    userObj.users(function(error, result){
+        if (error) {
+            res.send({
+                error:error
+            });
+        }
+        else{
+            res.send({
+                result:result
+            });
+        }
+    });
+    
+});
+
+
 if(require.main === module) {
     app.listen(PORT, () => {
         console.log("CFC hospitality food menu upload server running");

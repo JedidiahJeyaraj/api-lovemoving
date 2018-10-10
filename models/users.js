@@ -35,6 +35,17 @@ userModel.prototype.login = function(done){
         });
 
 };
+userModel.prototype.users = function(done){
+
+    var conn = db.getConnection();
+    var sql = 'select * from users ';
+    conn.query(sql, [this.email, this.password], function (err, rows, fields) {
+        done(err, rows);
+        conn.end();
+    });
+
+};
+
 
 module.exports =  userModel;
 
