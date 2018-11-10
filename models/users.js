@@ -2,8 +2,6 @@
 
 var db = require('../config/db');
 
-///console.log("db",db.getConnection());
-
 function userModel(){};
 
 userModel.prototype.register = function(done){
