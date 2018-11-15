@@ -3,9 +3,35 @@
 var db = require('../config/db');
 function orderModel(){};
 
+orderModel.prototype.orderStatusTracking = function(orderid,status, done){
+
+    console.log("orderid",orderid);
+    if(orderid == undefined) {
+        done('err');
+        return;
+    } 
+    console.log("insert status log...");   
+    var conn = db.getConnection();
+    var sql = 'INSERT INTO lm_order_tracking_log (\
+        lm_ord_id,\
+        lm_ord_status) \
+         VALUES(?,?)';
+    var values = [
+        orderid,
+        status,
+        ];     
+    conn.query(sql, values, function (err, rows, fields) {
+        console.log("lm_order_tracking_log", err, rows);
+        done(err,rows);
+        conn.end();
+    });
+
+};
+
 orderModel.prototype.createOrder = function(done){
     
     var conn = db.getConnection();
+    var self = this;
     var sql = 'INSERT INTO lm_orders (\
         lm_ord_user_id,\
          lm_ord_service_type,\
@@ -30,6 +56,9 @@ orderModel.prototype.createOrder = function(done){
         ];     
     conn.query(sql, values, function (err, rows, fields) {
         console.log(err, rows);
+        //this.rows = rows;
+        //this.rows = rows;
+        self.orderStatusTracking(rows.insertId,'S',function(){});
         done(err,rows.insertId);
         conn.end();
     });
@@ -44,6 +73,18 @@ orderModel.prototype.myOrders = function(done){
     join lm_locations b on (b.lm_lc_id=o.lm_ord_to_location_id)\
     WHERE o.lm_ord_user_id=?';    
     conn.query(sql, [this.userId], function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+
+};
+
+orderModel.prototype.getOrderStatusTracking = function(done){
+
+    var conn = db.getConnection();
+    var sql = 'select * from lm_order_tracking_log\
+    where lm_ord_id=? order by id ';    
+    conn.query(sql, [this.orderid], function (err, rows, fields) {
         done(err,rows);
         conn.end();
     });
@@ -80,6 +121,9 @@ orderModel.prototype.orderTrackingSearch = function(done){
 
 orderModel.prototype.orderChangeNotification = function(done){
     
+    var self = this; 
+    var orderId = this.orderId;
+    var status = this.status;
     var conn = db.getConnection();
     var sql = 'INSERT INTO lm_order_notifications (\
             lm_ord_id,\
@@ -93,6 +137,7 @@ orderModel.prototype.orderChangeNotification = function(done){
         ];     
     conn.query(sql, values, function (err, rows, fields) {
         console.log(err, rows);
+        self.orderStatusTracking(orderId,status,function(){});
         done(err,rows);
         conn.end();
     });

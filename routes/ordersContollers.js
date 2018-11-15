@@ -65,6 +65,24 @@ var orders = function(app){
         });
     });
 
+
+    app.get('/order-status-tracking/:orderid', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.orderid = req.params.orderid;
+        orderObj.getOrderStatusTracking(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
     app.get('/order-tracking-search/:userid/:orderid', function(req, res){
         var orderObj = new orderModel();
         orderObj.userId = req.params.userid;
