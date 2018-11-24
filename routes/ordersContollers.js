@@ -31,10 +31,100 @@ var orders = function(app){
         })  
     });
 
+
+    app.post('/customer-feedback', function(req, res){
+        var orderObj = new orderModel();
+        var body = req.body;
+        console.log("body", body);
+       //  return;
+        orderObj.orderid = req.body.orderid;
+        orderObj.feedback_note = req.body.feedback_note;
+        
+        orderObj.customerFeedback(function(error, result){
+           if (error) {
+               res.send({
+                   error:error
+               });
+           }
+           else{
+               res.send({
+                   result:result
+               });
+           }
+       })  
+   });
+
     app.get('/my-orders/:userid', function(req, res){
         var orderObj = new orderModel();
         orderObj.userId = req.params.userid;
         orderObj.myOrders(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
+    app.get('/new-service-providers', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.newServiceProviders(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
+    app.get('/todays-ongoing-jobs', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.todaysOngoingJobs(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
+
+    app.get('/new-alerts/:userid', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.userId = req.params.userid
+        orderObj.newAlerts(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
+    app.get('/order-service-provider/:userid', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.userId = req.params.userid;
+        orderObj.orderServiceProvider(function(error, result){
             if (error) {
                 res.send({
                     error:error
