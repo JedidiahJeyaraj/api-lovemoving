@@ -171,11 +171,11 @@ orderModel.prototype.serviceProviderRating = function(done){
 
 orderModel.prototype.serviceProviderRatingByIndivisualUsers = function(done){
     var conn = db.getConnection();
-    var sql = 'SELECT lm_user_id,user.firstname,\
-    user.lastname,ra.created_at, lm_ord_rating FROM lm_orders_ratings as ra\
+    var sql = 'SELECT lm_user_id,user.firstname as firstname,\
+    user.lastname as lastname,ra.created_at as created_at, lm_ord_rating as lm_ord_rating FROM lm_orders_ratings as ra\
     join users user on (user.id=ra.lm_user_id)\
     WHERE lm_service_provider_id=?\
-    GROUP BY lm_user_id limit 5';
+    GROUP BY lm_user_id,firstname,lastname,created_at,lm_ord_rating limit 5';
     conn.query(sql, [this.userId], function (err, rows, fields) {
         done(err,rows);
         conn.end();
