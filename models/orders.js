@@ -291,7 +291,7 @@ orderModel.prototype.getAllServiceProvider = function(done){
     var sql = "SELECT usr.id as id, CONCAT(usr.firstname,' ', usr.lastname) as fullname,\
     sum(lor.lm_ord_rating) as sum_of_all_ratings,count(lor.lm_rt_id)\
      as number_of_rating FROM users usr\
-    join lm_orders_ratings  lor on (lor.lm_service_provider_id=usr.id)\
+    left join lm_orders_ratings  lor on (lor.lm_service_provider_id=usr.id)\
     WHERE usr.is_customer_login='2' group by id";    
     conn.query(sql, function (err, rows, fields) {
         done(err,rows);
