@@ -65,9 +65,9 @@ orderModel.prototype.createOrder = function(done){
          lm_ord_to_location_id,\
          lm_ord_date,\
          lm_ord_access_time,\
-         lm_ord_comments)\
-         lm_ord_service_provider\
-         VALUES(?,?,?,?,?,?,?,?,?)';
+         lm_ord_comments,\
+         lm_ord_service_provider)\
+         VALUES(?,?,?,?,?,?,?,?,?,?)';
     var values = [
         this.userId,
         this.serviceType,
@@ -78,8 +78,9 @@ orderModel.prototype.createOrder = function(done){
         this.orderDateTime,
         this.accessTime,
         this.orderComments,
-        '4'
-        ];     
+        this.serviceProvider
+        ];
+        console.log(sql, values);     
     conn.query(sql, values, function (err, rows, fields) {
         console.log(err, rows);
         //this.rows = rows;
@@ -104,6 +105,106 @@ orderModel.prototype.myOrders = function(done){
     });
 };
 
+orderModel.prototype.numberOfBookingsInThisYear = function(done){
+
+    var conn = db.getConnection();
+    var sql = "SELECT months, COUNT(months) as order_counts from (\
+        SELECT DATE_FORMAT(lm_ord_from, '%Y-%m') as months FROM\
+        lm_orders WHERE\
+        DATE_FORMAT(lm_ord_from, '%Y') = DATE_FORMAT(now(), '%Y') and \
+        lm_ord_service_provider=?) as temp\
+        GROUP by months order by months";    
+    conn.query(sql, [this.userId], function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+};
+
+orderModel.prototype.totalDailyBookings = function(done){
+
+    var conn = db.getConnection();
+    var sql = "SELECT count(*) as total_daily_bookings FROM lm_orders\
+    WHERE date(created_at)=date(now()) \
+    and lm_ord_service_provider=?";    
+    conn.query(sql, [this.userId], function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+};
+
+
+orderModel.prototype.checkForFeedback = function(done){
+
+    var conn = db.getConnection();
+    var sql = 'SELECT COUNT(fd.id) as feedback from lm_cus_feedback_to_sp fd\
+    join lm_orders ord on (fd.lm_order_id=ord.lm_ord_id)\
+    where ord.lm_ord_user_id=? and fd.lm_order_id=?';    
+    conn.query(sql, [this.userId, this.orderId], function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+};
+
+orderModel.prototype.serviceProviderOngoingJobs = function(done){
+
+    var conn = db.getConnection();
+    var sql = 'select count(lm_ord_id) as count from lm_orders\
+    WHERE lm_ord_from>=date(now()) and lm_ord_to<=date(now()) and\
+     lm_ord_service_provider=?';
+    conn.query(sql, [this.userId], function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+};
+
+orderModel.prototype.serviceProviderRating = function(done){
+
+    var conn = db.getConnection();
+    var sql = 'SELECT sum(lm_ord_rating) as sum_of_rating,\
+     COUNT(*) as n_rating FROM lm_orders_ratings\
+      WHERE lm_service_provider_id=?';
+    conn.query(sql, [this.userId], function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+};
+
+orderModel.prototype.serviceProviderRatingByIndivisualUsers = function(done){
+    var conn = db.getConnection();
+    var sql = 'SELECT lm_user_id,user.firstname,\
+    user.lastname,ra.created_at, lm_ord_rating FROM lm_orders_ratings as ra\
+    join users user on (user.id=ra.lm_user_id)\
+    WHERE lm_service_provider_id=?\
+    GROUP BY lm_user_id limit 5';
+    conn.query(sql, [this.userId], function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+};
+
+
+orderModel.prototype.serviceProviderJobSummaryStatusWise = function(done){
+    var conn = db.getConnection();
+    var sql = 'SELECT lm_ord_status, count(*) as count from lm_orders\
+    where lm_ord_service_provider=?\
+    GROUP by lm_ord_status';
+    conn.query(sql, [this.userId], function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+};
+
+
+orderModel.prototype.serviceProviderConfirmationPendingJobs = function(done){
+
+    var conn = db.getConnection();
+    var sql = 'select count(lm_ord_id) as count from lm_orders\
+    WHERE lm_ord_service_provider=? and lm_ord_status=?';
+    conn.query(sql, [this.userId, 'S'], function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+};
 orderModel.prototype.newServiceProviders = function(done){
 
     var conn = db.getConnection();
@@ -141,15 +242,32 @@ orderModel.prototype.newAlerts = function(done){
     });
 };
 
+orderModel.prototype.customerRating = function(customerId, serviceProviderId,ratingStarts,done){
+     var conn = db.getConnection();
+     var sql = "INSERT INTO lm_orders_ratings\
+      (lm_rt_id, lm_user_id, lm_service_provider_id,\
+       lm_ord_rating)\
+        VALUES (NULL, ?, ?, ?)";    
+    console.log("sql", sql);
+    conn.query(sql, [customerId, serviceProviderId, ratingStarts], function (err, rows, fields) {
+        console.log(err, rows);
+        done(err,rows);
+        conn.end();
+    });
+}    
+
 orderModel.prototype.customerFeedback = function(done){
 
     var conn = db.getConnection();
+    var self = this;
     var sql = "INSERT INTO lm_cus_feedback_to_sp\
      (id, lm_order_id, lm_cus_feedback_note)\
       VALUES (NULL, ?, ?)";    
     console.log("sql", sql);
     conn.query(sql, [this.orderid, this.feedback_note], function (err, rows, fields) {
         done(err,rows);
+        console.log(self.customerId, self.service_provider, self.numStars);
+        self.customerRating(self.customerId, self.service_provider, self.numStars, function(){});
         conn.end();
     });
 };
@@ -167,6 +285,19 @@ orderModel.prototype.orderServiceProvider = function(done){
     });
 };
 
+orderModel.prototype.getAllServiceProvider = function(done){
+
+    var conn = db.getConnection();
+    var sql = "SELECT usr.id, CONCAT(usr.firstname,' ', usr.lastname) as fullname,\
+    sum(lor.lm_ord_rating) as sum_of_all_ratings,count(lor.lm_rt_id)\
+     as number_of_rating FROM users usr\
+    join lm_orders_ratings  lor on (lor.lm_service_provider_id=usr.id)\
+    WHERE usr.is_customer_login='2'";    
+    conn.query(sql, function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+};
 
 
 orderModel.prototype.getOrderStatusTracking = function(done){

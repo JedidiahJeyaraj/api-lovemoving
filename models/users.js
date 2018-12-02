@@ -21,6 +21,31 @@ userModel.prototype.register = function(done){
 };
 
 
+userModel.prototype.editUser = function(done){
+
+    console.log("dasda");
+        var conn = db.getConnection();
+        var sql = 'UPDATE users SET user_company = ?,address=?,city=?,zip_code=?,\
+        region=?,state=?,user_desc=? WHERE id = ?';
+         var values = [
+             this.company,
+             this.address,
+             this.city,
+             this.zipcode,
+             this.region,
+             this.state,
+             this.mydesc,
+             this.userId
+         ]
+         ///console.log(values);
+        conn.query(sql, values, function (err, rows, fields) {
+            if(err){
+                done(err)
+            }else done(null,rows);
+            conn.end();
+        });
+};
+
 userModel.prototype.login = function(done){
 
         var conn = db.getConnection();
@@ -38,6 +63,17 @@ userModel.prototype.users = function(done){
     var conn = db.getConnection();
     var sql = 'select * from users ';
     conn.query(sql, [this.email, this.password], function (err, rows, fields) {
+        done(err, rows);
+        conn.end();
+    });
+
+};
+
+userModel.prototype.findById = function(done){
+
+    var conn = db.getConnection();
+    var sql = 'select * from users where id=?';
+    conn.query(sql, [this.userId], function (err, rows, fields) {
         done(err, rows);
         conn.end();
     });

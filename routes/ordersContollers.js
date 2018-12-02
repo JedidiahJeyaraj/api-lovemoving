@@ -17,6 +17,7 @@ var orders = function(app){
          orderObj.ToLocation = body.ToLocation;
          orderObj.orderComments = body.orderComments;
          orderObj.accessTime = body.accessTime;
+         orderObj.serviceProvider = body.serviceProvider;
          orderObj.createOrder(function(error, result){
             if (error) {
                 res.send({
@@ -39,6 +40,9 @@ var orders = function(app){
        //  return;
         orderObj.orderid = req.body.orderid;
         orderObj.feedback_note = req.body.feedback_note;
+        orderObj.customerId = req.body.userId;
+        orderObj.service_provider = req.body.service_provider;
+        orderObj.numStars = req.body.numStars;
         
         orderObj.customerFeedback(function(error, result){
            if (error) {
@@ -58,6 +62,144 @@ var orders = function(app){
         var orderObj = new orderModel();
         orderObj.userId = req.params.userid;
         orderObj.myOrders(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
+    app.get('/number-of-bookings-in-this-year/:userid', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.userId = req.params.userid;
+        orderObj.numberOfBookingsInThisYear(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
+    app.get('/total-daily-bookings/:userid', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.userId = req.params.userid;
+        orderObj.totalDailyBookings(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
+    app.get('/check-for-feedback/:orderid/:userid', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.userId = req.params.userid;
+        orderObj.orderId = req.params.orderid;
+        orderObj.checkForFeedback(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
+    app.get('/service-provider-ongoing-jobs/:userid', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.userId = req.params.userid;
+        orderObj.serviceProviderOngoingJobs(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
+    app.get('/service-provider-rating/:userid', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.userId = req.params.userid;
+        orderObj.serviceProviderRating(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
+    app.get('/service-provider-rating-by-indivisual_users/:userid', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.userId = req.params.userid;
+        orderObj.serviceProviderRatingByIndivisualUsers(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
+    app.get('/service-provider-job-summary-status-wise/:userid', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.userId = req.params.userid;
+        orderObj.serviceProviderJobSummaryStatusWise(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
+
+    app.get('/service-provider-confirmation-pending-jobs/:userid', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.userId = req.params.userid;
+        orderObj.serviceProviderConfirmationPendingJobs(function(error, result){
             if (error) {
                 res.send({
                     error:error
@@ -125,6 +267,23 @@ var orders = function(app){
         var orderObj = new orderModel();
         orderObj.userId = req.params.userid;
         orderObj.orderServiceProvider(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
+    app.get('/get-all-service-provider', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.userId = req.params.userid;
+        orderObj.getAllServiceProvider(function(error, result){
             if (error) {
                 res.send({
                     error:error

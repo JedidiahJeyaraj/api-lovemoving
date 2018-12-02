@@ -48,6 +48,33 @@ var auth = function(app){
         });
     });
 
+
+    app.post('/edit-user', function(req, res){
+
+        var userObj = new userModel();
+        userObj.company = req.body.company;
+        userObj.address = req.body.address;
+        userObj.city = req.body.city;
+        userObj.zipcode = req.body.zipcode;
+        userObj.region = req.body.region;
+        userObj.state = req.body.state;
+        userObj.mydesc = req.body.mydesc;
+        userObj.userId = req.body.userid;
+        console.log(req.body);
+        userObj.editUser(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
     app.get('/users-list', function(req, res){
 
         var userObj = new userModel();    
@@ -64,6 +91,25 @@ var auth = function(app){
             }
         });
     });
+
+    app.get('/users/:userid', function(req, res){
+
+        var userObj = new userModel();
+            userObj.userId = req.params.userid;    
+        userObj.findById(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+    
 };
 
 module.exports = auth;
