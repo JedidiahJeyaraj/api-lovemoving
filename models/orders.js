@@ -182,6 +182,16 @@ orderModel.prototype.serviceProviderRatingByIndivisualUsers = function(done){
     });
 };
 
+orderModel.prototype.newsfeedIsReviewLeft = function(done){
+    var conn = db.getConnection();
+    var sql = "SELECT lm_ord_service_type from lm_orders\
+    join lm_orders_ratings on (lm_ord_user_id=lm_user_id)\
+    where lm_user_id=? and lm_ord_status in ('F', 'D') limit 1";
+    conn.query(sql, [this.userId], function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+};
 
 orderModel.prototype.serviceProviderJobSummaryStatusWise = function(done){
     var conn = db.getConnection();

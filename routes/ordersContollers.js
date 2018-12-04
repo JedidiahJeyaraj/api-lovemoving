@@ -178,6 +178,23 @@ var orders = function(app){
         });
     });
 
+    app.get('/newsfeed-is-review-left/:userid', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.userId = req.params.userid;
+        orderObj.newsfeedIsReviewLeft(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
+
     app.get('/service-provider-job-summary-status-wise/:userid', function(req, res){
         var orderObj = new orderModel();
         orderObj.userId = req.params.userid;
