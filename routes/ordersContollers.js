@@ -1,7 +1,82 @@
 "use strict";
 const orderModel = require('../models/orders');
+const userModel = require('../models/users');
+const fs = require('fs');
+const multer = require('multer');
+
+const BASE_URL = __dirname;
+/*
+var Storage = multer.diskStorage({
+    destination: function(req, file, callback) {
+        callback(null, BASE_URL+ "/../uploads");
+    },
+    filename: function(req, file, callback) {
+        callback(null, file.originalname);
+    }
+});
+
+var upload = multer({storage: Storage});*/
+
 
 var orders = function(app){
+
+    /** 
+      * route /product: create new product
+      * upload: upload file using multer module
+      * http method:POST
+    */
+
+    app.post('/upload-avatar/:id', function(req, res){
+
+         //console.log(req);;
+         var uploadPath = "uploads/" + req.params.id
+            , path = BASE_URL + "/../" + uploadPath
+            , fileName = "";
+        if (!fs.existsSync(path)) {
+            fs.mkdirSync(path)   
+        }
+        var Storage = multer.diskStorage({
+            destination: function(req, file, callback) {
+                callback(null, path);
+            },
+            filename: function(req, file, callback) {
+                fileName = file.originalname;
+                callback(null, file.originalname);
+            }
+        });
+        var upload = multer({storage: Storage}).any();
+        upload(req,res,function(err) {
+            if(err) {
+                console.log(err);
+                return res.end("Error uploading file.");
+            } 
+            else {
+
+                var userObj = new userModel();
+                userObj.userId = req.params.id;
+                userObj.path = uploadPath + "/" + fileName;
+                console.log(req.body);
+                userObj.updateAvatarPath(function(error, result){
+                    if (error) {
+                        res.send({
+                            error:error
+                        });
+                    }
+                    else{
+                        res.send({
+                            result:"success"
+                        });
+                    }
+                });
+            }
+        });
+
+        /*res.send({
+            result:"success"
+        }); */       
+
+    });
+
 
     app.post('/create-order', function(req, res){
          var orderObj = new orderModel();

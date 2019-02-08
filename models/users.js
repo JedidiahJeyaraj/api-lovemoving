@@ -46,6 +46,24 @@ userModel.prototype.editUser = function(done){
         });
 };
 
+userModel.prototype.updateAvatarPath = function(done){
+
+    console.log("dasda");
+        var conn = db.getConnection();
+        var sql = 'UPDATE users SET avatar = ? WHERE id = ?';
+         var values = [
+             this.path,
+             this.userId
+         ]
+         console.log(sql, values);
+        conn.query(sql, values, function (err, rows, fields) {
+            if(err){
+                done(err)
+            }else done(null,rows);
+            conn.end();
+        });
+};
+
 userModel.prototype.login = function(done){
 
         var conn = db.getConnection();
