@@ -78,6 +78,68 @@ var orders = function(app){
     });
 
 
+    app.get('/all-states', function(req, res){
+
+            var orderObj = new orderModel();
+            orderObj.getAllStates(function(err, result){
+                    if(err) {
+                        res.send({
+                            error:err
+                        });
+                    }
+                    else {
+                        res.send({
+                            result:result
+                        })
+                    }
+            });
+
+    });
+
+    app.get('/cities/:id', function(req, res){
+            
+        var orderObj = new orderModel();
+            orderObj.state_id = req.params.id;
+        orderObj.getCities(function(err, result){
+
+             if(err) {
+                res.send({
+                    error:err
+                });
+            }
+            else {
+                res.send({
+                    result:result
+                });
+            }
+
+        });
+
+    });
+
+//getCitiesSubUrbs
+
+    app.get('/suburb/:id', function(req, res){
+            
+        var orderObj = new orderModel();
+            orderObj.city_id = req.params.id;
+        orderObj.getCitiesSubUrbs(function(err, result){
+
+             if(err) {
+                res.send({
+                    error:err
+                });
+            }
+            else {
+                res.send({
+                    result:result
+                });
+            }
+
+        });
+
+    });
+
     app.post('/create-order', function(req, res){
          var orderObj = new orderModel();
          var body = req.body;

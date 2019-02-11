@@ -28,6 +28,45 @@ orderModel.prototype.orderStatusTracking = function(orderid,status, done){
 
 };
 
+
+orderModel.prototype.getAllStates = function(done){
+
+    var conn = db.getConnection();
+    var sql = 'select * from lm_states order by state_name';
+    conn.query(sql, function (err, rows, fields) {
+        console.log("lm_states", err, rows);
+        done(err,rows);
+        conn.end();
+    });
+
+};
+
+orderModel.prototype.getCities = function(done){
+
+    var conn = db.getConnection();
+    var sql = 'select * from lm_cities where lm_state_id=? order by lm_city_name';
+    conn.query(sql, [this.state_id], function (err, rows, fields) {
+        console.log("lm_cities", err, rows);
+        done(err,rows);
+        conn.end();
+    });
+
+};
+
+
+orderModel.prototype.getCitiesSubUrbs = function(done){
+
+    var conn = db.getConnection();
+    var sql = 'select * from lm_locations where lm_city_id=? order by lm_lc_name';
+    conn.query(sql, [this.city_id], function (err, rows, fields) {
+        console.log("lm_cities", err, rows);
+        done(err,rows);
+        conn.end();
+    });
+
+};
+
+
 orderModel.prototype.updateOrderStatus = function(orderid,status, done){
 
     console.log("orderid",orderid);
