@@ -64,7 +64,8 @@ var orders = function(app){
                     }
                     else{
                         res.send({
-                            result:"success"
+                            result:"success",
+                            avatarPath:userObj.path
                         });
                     }
                 });
