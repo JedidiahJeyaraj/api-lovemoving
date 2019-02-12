@@ -17,18 +17,18 @@ appconfig.getConnection = function(){
 };
 
 
-// appconfig.getConnection = function(){
-//     var connection = mysql.createConnection({
-//     host     : 'localhost',
-//     user     : 'umakant',
-//     password : 'welcome@123',
-//     database : 'lovemoving',
-//     port:3306
-//     });
-//     connection.connect();
+/*appconfig.getConnection = function(){
+    var connection = mysql.createConnection({
+    host     : 'localhost',
+    user     : 'umakant',
+    password : 'welcome@123',
+    database : 'lovemoving',
+    port:3306
+    });
+    connection.connect();
 
-//     return connection;
-// };
+    return connection;
+};*/
 
 
 module.exports = appconfig;
