@@ -17,7 +17,7 @@ var appconfig = {};
 // };
 
 
-appconfig.getConnection = function(){
+/*appconfig.getConnection = function(){
     var connection = mysql.createConnection({
     host     : 'db4free.net',
     user     : 'umakant',
@@ -28,10 +28,10 @@ appconfig.getConnection = function(){
     connection.connect();
 
     return connection;
-};
+};*/
 
 
-/*appconfig.getConnection = function(){
+appconfig.getConnection = function(){
     var connection = mysql.createConnection({
     host     : 'localhost',
     user     : 'umakant',
@@ -44,5 +44,5 @@ appconfig.getConnection = function(){
     return connection;
 };
 
-*/
+
 module.exports = appconfig;
