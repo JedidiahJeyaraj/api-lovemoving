@@ -21,9 +21,9 @@ require('./routes/ordersContollers')(app);
 
 if(require.main === module) {
     app.listen(PORT, () => {
-        console.log("CFC hospitality food menu upload server running");
+        console.log(`Server renning on http://localhost:${PORT}`);
     });
-  }
+}
   
   module.exports = app;
   

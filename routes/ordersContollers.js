@@ -28,13 +28,24 @@ var orders = function(app){
 
     app.post('/upload-avatar/:id', function(req, res){
 
-         //console.log(req);;
          var uploadPath = "uploads/" + req.params.id
             , path = BASE_URL + "/../" + uploadPath
             , fileName = "";
+        if(req.query.avatarPath != undefined && req.query.avatarPath!=""){
+            let deleteAvatarPath = BASE_URL + "/../" + req.query.avatarPath;
+            try{
+                console.log("delete avatar", deleteAvatarPath);
+                fs.unlinkSync(deleteAvatarPath);
+            }
+            catch(e){
+                console.log("file unlink failed!\n", deleteAvatarPath);
+                console.log(e);
+            };   
+        }    
         if (!fs.existsSync(path)) {
             fs.mkdirSync(path)   
         }
+        
         var Storage = multer.diskStorage({
             destination: function(req, file, callback) {
                 callback(null, path);
@@ -195,6 +206,62 @@ var orders = function(app){
            }
        })  
    });
+
+   app.get("/calender/:date/:userid", function(req, res){
+
+        var orderObj = new orderModel();
+        orderObj.date = req.params.date;
+        orderObj.userId = req.params.userid;
+        orderObj.time = req.query.time;
+        orderObj.blockCalender(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+   });
+
+   app.get("/get-calender/:from_date/:to_date/:userid", function(req, res){
+
+        var orderObj = new orderModel();
+        orderObj.from_date = req.params.from_date;
+        orderObj.to_date = req.params.to_date;
+        orderObj.userId = req.params.userid;
+        orderObj.getCalender(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        }); 
+    });
+    app.get('/order/:orderid', function(req, res){
+        var orderObj = new orderModel();
+        orderObj.orderid = req.params.orderid;
+        orderObj.findOrderById(function(error, result){
+            if (error) {
+                res.send({
+                    error:error
+                });
+            }
+            else{
+                res.send({
+                    result:result
+                });
+            }
+        });
+    });
 
     app.get('/my-orders/:userid', function(req, res){
         var orderObj = new orderModel();

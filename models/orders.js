@@ -361,6 +361,38 @@ orderModel.prototype.getOrderStatusTracking = function(done){
 
 };
 
+orderModel.prototype.blockCalender = function(done) {
+    var conn = db.getConnection();
+    var sql = "INSERT INTO `lm_calender` (`lm_cal_id`,\
+     `lm_user_id`, `lm_cal_block_date`, `lm_cal_time`)\
+      VALUES (NULL, ?, ?, ?)";    
+    conn.query(sql, [this.userId, this.date, this.time], function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+}
+
+orderModel.prototype.getCalender = function(done) {
+    var conn = db.getConnection();
+    var sql = "select * from lm_calender where lm_user_id= ? \
+    and lm_cal_block_date>=? and lm_cal_block_date<= ? ";    
+    conn.query(sql, [this.userId, this.from_date,this.to_date, this.date], function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+}
+
+orderModel.prototype.findOrderById = function(done) {
+    var conn = db.getConnection();
+    var sql = "SELECT  a.lm_lc_name as fromlocation,b.lm_lc_name as tolocation,o.* FROM lm_orders o\
+    join lm_locations a on (a.lm_lc_id=o.lm_ord_from_location_id)\
+    join lm_locations b on (b.lm_lc_id=o.lm_ord_to_location_id)\
+    WHERE o.lm_ord_id=? order by created_at desc";    
+    conn.query(sql, [this.orderid], function (err, rows, fields) {
+        done(err,rows);
+        conn.end();
+    });
+}
 
 orderModel.prototype.myOrdersNotifications = function(done){
 
